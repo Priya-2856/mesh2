@@ -17,7 +17,6 @@ global_job_config:
     commands:
       - 'curl -sSfL https://raw.githubusercontent.com/ldez/semgo/master/godownloader.sh | sudo sh -s -- -b "/usr/local/bin"'
       - sudo semgo go1.17
-      - 'echo "${DOCKERHUB_PASSWORD}" | docker login -u "${DOCKERHUB_USERNAME}" --password-stdin'
       - checkout
 blocks:
   - name: Build
@@ -61,6 +60,9 @@ blocks:
           - docker load < traefik-mesh-img.tar
       jobs:
         - name: ACL Enabled Suite
+          matrix:
+          - env_var: ARCH
+            values: [ "arm64", "amd64" ]
           commands:
             - make test-integration-nobuild TESTFLAGS="-check.f ACLEnabledSuite"
         - name: ACL Disabled Suite
